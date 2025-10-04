@@ -1,0 +1,30 @@
+# 核心深度学习框架 (基于verl_flow环境版本)
+torch==2.6.0
+torchvision==0.21.0
+torchaudio==2.6.0
+
+# Transformers生态系统
+transformers==4.56.1
+datasets==4.0.0
+tokenizers==0.22.0
+accelerate==1.10.1
+
+# 数据处理
+numpy==2.2.6
+pandas>=1.5.0
+
+# 进度条和工具
+tqdm==4.67.1
+
+# flash-attn==2.7.4.post1
+
+# 可选：Weights & Biases (用于实验跟踪)
+wandb==0.21.3
+
+
+
+# 可选：PEFT (如果需要LoRA等)
+# peft==0.17.1
+
+# 可选：BitsAndBytes (如果需要量化)
+# bitsandbytes==0.48.1
