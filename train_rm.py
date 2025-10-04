@@ -11,6 +11,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from datasets import load_dataset
+import os
 # from peft import LoraConfig, TaskType, get_peft_model
 from transformers import (
     AutoModelForSequenceClassification,
@@ -97,10 +98,29 @@ class ScriptArguments:
         default=108,
         metadata={"help": "Eval the model every x steps"},
     )
+    wandb_project: Optional[str] = field(
+        default="huggingface",
+        metadata={"help": "Wandb project name"},
+    )
+    wandb_run_name: Optional[str] = field(
+        default="rm-test",
+        metadata={"help": "Wandb run name (if None, will auto-generate)"},
+    )
 
 
 parser = HfArgumentParser(ScriptArguments)
 script_args = parser.parse_args_into_dataclasses()[0]
+
+# 初始化wandb
+import wandb
+if script_args.wandb_run_name is None:
+    # 自动生成run名称
+    import datetime
+    script_args.wandb_run_name = f"rm-{script_args.model_name.split('/')[-1]}-{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
+# 设置wandb项目
+os.environ["WANDB_PROJECT"] = script_args.wandb_project
+os.environ["WANDB_RUN_NAME"] = script_args.wandb_run_name
 
 # Load the value-head model and tokenizer.
 tokenizer_name = script_args.model_name
@@ -187,6 +207,9 @@ training_args = TrainingArguments(
     report_to='wandb',
     save_only_model=True,
     save_safetensors=True,
+    # Wandb配置
+    run_name=script_args.wandb_run_name,
+    hub_model_id=None,
 )
 
 model = AutoModelForSequenceClassification.from_pretrained(
